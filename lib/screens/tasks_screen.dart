@@ -1,7 +1,14 @@
 import 'package:flutter/material.dart';
+import '../widgets/task_list.dart';
 
 class TasksScreen extends StatelessWidget {
-  const TasksScreen({super.key});
+  final void Function(bool) onTaskSelected;
+  final bool isTaskSelected;
+  const TasksScreen({
+    super.key,
+    required this.onTaskSelected,
+    required this.isTaskSelected,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -16,7 +23,7 @@ class TasksScreen extends StatelessWidget {
       ),
       backgroundColor: Colors.lightBlueAccent,
       body: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
             padding: const EdgeInsets.only(
@@ -54,29 +61,38 @@ class TasksScreen extends StatelessWidget {
                   )
                 ]),
           ),
-          const TodoContainer(),
+          Expanded(
+            child: Container(
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(30),
+                  topRight: Radius.circular(30),
+                ),
+              ),
+              child: TaskList(
+                isTaskChecked: isTaskSelected,
+                onTaskChecked: (value) => onTaskSelected(value),
+              ),
+            ),
+          ),
         ],
       ),
     );
   }
 }
 
-class TodoContainer extends StatelessWidget {
-  const TodoContainer({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Expanded(
-      child: Container(
-        padding: const EdgeInsets.all(24),
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(30),
-            topRight: Radius.circular(30),
-          ),
-        ),
-      ),
-    );
-  }
+List<CheckboxListTile> generateTaskList({
+  required void Function(bool) onChecked,
+  bool isChecked = false,
+}) {
+  List<CheckboxListTile> tasks = [];
+  List.generate(5, (index) {
+    tasks.add(CheckboxListTile(
+      title: Text('Task Number ${index + 1}'),
+      value: isChecked,
+      onChanged: (isTaskChecked) => onChecked(isTaskChecked!),
+    ));
+  });
+  return tasks;
 }
