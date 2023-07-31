@@ -1,14 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:todoeyapp/screens/add_task_screen.dart';
+import 'package:todoeyapp/widgets/task_tile.dart';
 import '../widgets/task_list.dart';
 
 class TasksScreen extends StatelessWidget {
-  final void Function(bool) onTaskSelected;
-  final bool isTaskSelected;
-  const TasksScreen({
-    super.key,
-    required this.onTaskSelected,
-    required this.isTaskSelected,
-  });
+  const TasksScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +15,23 @@ class TasksScreen extends StatelessWidget {
           Icons.add,
           size: 32,
         ),
-        onPressed: () {},
+        onPressed: () {
+          showModalBottomSheet(
+            shape: const RoundedRectangleBorder(
+              borderRadius: BorderRadiusDirectional.only(
+                topStart: Radius.circular(30),
+                topEnd: Radius.circular(30),
+              ),
+            ),
+            context: context,
+            isScrollControlled: true,
+            builder: (context) => SingleChildScrollView(
+                padding: EdgeInsets.only(
+                  bottom: MediaQuery.of(context).viewInsets.bottom,
+                ),
+                child: const AddTaskScreen()),
+          );
+        },
       ),
       backgroundColor: Colors.lightBlueAccent,
       body: Column(
@@ -28,8 +40,8 @@ class TasksScreen extends StatelessWidget {
           Container(
             padding: const EdgeInsets.only(
               top: 60,
-              left: 30,
-              right: 30,
+              left: 32,
+              right: 32,
               bottom: 30,
             ),
             child: const Column(
@@ -70,29 +82,11 @@ class TasksScreen extends StatelessWidget {
                   topRight: Radius.circular(30),
                 ),
               ),
-              child: TaskList(
-                isTaskChecked: isTaskSelected,
-                onTaskChecked: (value) => onTaskSelected(value),
-              ),
+              child: const TaskList(),
             ),
           ),
         ],
       ),
     );
   }
-}
-
-List<CheckboxListTile> generateTaskList({
-  required void Function(bool) onChecked,
-  bool isChecked = false,
-}) {
-  List<CheckboxListTile> tasks = [];
-  List.generate(5, (index) {
-    tasks.add(CheckboxListTile(
-      title: Text('Task Number ${index + 1}'),
-      value: isChecked,
-      onChanged: (isTaskChecked) => onChecked(isTaskChecked!),
-    ));
-  });
-  return tasks;
 }
