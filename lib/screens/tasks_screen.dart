@@ -1,10 +1,46 @@
 import 'package:flutter/material.dart';
+import 'package:todoeyapp/models/task.dart';
 import 'package:todoeyapp/screens/add_task_screen.dart';
-import 'package:todoeyapp/widgets/task_tile.dart';
 import '../widgets/task_list.dart';
 
-class TasksScreen extends StatelessWidget {
+class TasksScreen extends StatefulWidget {
   const TasksScreen({super.key});
+
+  @override
+  State<TasksScreen> createState() => _TasksScreenState();
+}
+
+class _TasksScreenState extends State<TasksScreen> {
+  final _textController = TextEditingController();
+  final taskManager = TaskManager();
+
+  void createTask(String newTaskName) {
+    setState(() {
+      taskManager.createNewTask(taskText: newTaskName);
+      _textController.clear();
+    });
+  }
+
+  @override
+  void dispose() {
+    _textController.dispose();
+    super.dispose();
+  }
+
+  void updateTask(int taskId) {
+    setState(() {
+      taskManager.updateTaskState(taskId);
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    taskManager.initTasksList();
+    _textController.addListener(() {
+      _textController.text;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +65,11 @@ class TasksScreen extends StatelessWidget {
                 padding: EdgeInsets.only(
                   bottom: MediaQuery.of(context).viewInsets.bottom,
                 ),
-                child: const AddTaskScreen()),
+                child: AddTaskScreen(
+                  addTask: (String taskText) => createTask(taskText),
+                  clearField: () => createTask,
+                  textEditingController: _textController,
+                )),
           );
         },
       ),
@@ -44,34 +84,33 @@ class TasksScreen extends StatelessWidget {
               right: 32,
               bottom: 30,
             ),
-            child: const Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  CircleAvatar(
-                    backgroundColor: Colors.white,
-                    radius: 30,
-                    child: Icon(
-                      Icons.list,
-                      size: 30,
-                      color: Colors.lightBlueAccent,
-                    ),
-                  ),
-                  SizedBox(height: 10),
-                  Text(
-                    'Todoey',
-                    style: TextStyle(
-                      fontSize: 50,
-                      fontWeight: FontWeight.w700,
-                      color: Colors.white,
-                    ),
-                  ),
-                  Text(
-                    '12 Tasks',
-                    style: TextStyle(
-                      color: Colors.white,
-                    ),
-                  )
-                ]),
+            child:
+                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              const CircleAvatar(
+                backgroundColor: Colors.white,
+                radius: 30,
+                child: Icon(
+                  Icons.list,
+                  size: 30,
+                  color: Colors.lightBlueAccent,
+                ),
+              ),
+              const SizedBox(height: 10),
+              const Text(
+                'Todoey',
+                style: TextStyle(
+                  fontSize: 50,
+                  fontWeight: FontWeight.w700,
+                  color: Colors.white,
+                ),
+              ),
+              Text(
+                '${taskManager.getTaskList().length} Tasks',
+                style: const TextStyle(
+                  color: Colors.white,
+                ),
+              )
+            ]),
           ),
           Expanded(
             child: Container(
@@ -82,7 +121,10 @@ class TasksScreen extends StatelessWidget {
                   topRight: Radius.circular(30),
                 ),
               ),
-              child: const TaskList(),
+              child: TaskList(
+                taskList: taskManager.getTaskList(),
+                updateCheckbox: (taskIndex) => updateTask(taskIndex),
+              ),
             ),
           ),
         ],

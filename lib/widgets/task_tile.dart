@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 
 class CheckboxTile extends StatelessWidget {
-  const CheckboxTile({
-    super.key,
-    required this.onUpdateCheckbox,
-    required this.name,
-    required this.checkboxState,
-  });
+  const CheckboxTile(
+      {super.key,
+      required this.onUpdateCheckbox,
+      required this.name,
+      required this.checkboxState});
 
   final bool checkboxState;
   final String name;

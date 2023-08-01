@@ -1,7 +1,16 @@
 import 'package:flutter/material.dart';
 
 class AddTaskScreen extends StatelessWidget {
-  const AddTaskScreen({super.key});
+  const AddTaskScreen({
+    super.key,
+    required this.addTask,
+    required this.clearField,
+    required this.textEditingController,
+  });
+
+  final Function addTask;
+  final Function clearField;
+  final TextEditingController textEditingController;
 
   @override
   Widget build(BuildContext context) {
@@ -13,31 +22,29 @@ class AddTaskScreen extends StatelessWidget {
       ),
       child: Column(
         children: [
-          const Text(
-            'Add Task',
-            style: TextStyle(
-              fontSize: 32,
-              color: Colors.lightBlueAccent,
-            ),
-          ),
+          const Text('Add Task',
+              style: TextStyle(fontSize: 32, color: Colors.lightBlueAccent)),
           const SizedBox(height: 10),
           Container(
             height: 38,
             decoration: const BoxDecoration(
               border: Border(
-                bottom: BorderSide(
-                  color: Colors.lightBlueAccent,
-                  width: 3,
-                ),
+                bottom: BorderSide(color: Colors.lightBlueAccent, width: 3),
               ),
             ),
             child: TextFormField(
               cursorWidth: 3,
               autofocus: true,
+              controller: textEditingController,
               textAlign: TextAlign.center,
               keyboardType: TextInputType.text,
-              onEditingComplete: () {},
-              onChanged: (value) {},
+              onEditingComplete: () => clearField,
+              onChanged: (value) {
+                textEditingController.text = value;
+                textEditingController.selection = TextSelection.collapsed(
+                  offset: textEditingController.text.length,
+                );
+              },
               maxLines: 1,
               decoration: const InputDecoration(border: InputBorder.none),
             ),
@@ -47,19 +54,15 @@ class AddTaskScreen extends StatelessWidget {
             width: MediaQuery.of(context).size.width,
             height: 48,
             child: ElevatedButton(
-              onPressed: () {},
+              onPressed: () => addTask(textEditingController.text),
               style: ButtonStyle(
                 backgroundColor: MaterialStateColor.resolveWith(
-                  (states) => Colors.lightBlueAccent,
-                ),
+                    (states) => Colors.lightBlueAccent),
                 textStyle: MaterialStateTextStyle.resolveWith(
                   (states) => const TextStyle(color: Colors.white),
                 ),
               ),
-              child: const Text(
-                'Add',
-                style: TextStyle(fontSize: 18),
-              ),
+              child: const Text('Add', style: TextStyle(fontSize: 18)),
             ),
           ),
           const SizedBox(height: 20)
