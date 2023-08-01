@@ -66,7 +66,11 @@ class _TasksScreenState extends State<TasksScreen> {
                   bottom: MediaQuery.of(context).viewInsets.bottom,
                 ),
                 child: AddTaskScreen(
-                  addTask: (String taskText) => createTask(taskText),
+                  addTask: (String taskText) {
+                    createTask(taskText);
+                    Future.delayed(const Duration(milliseconds: 400),
+                        () => Navigator.pop(context));
+                  },
                   clearField: () => createTask,
                   textEditingController: _textController,
                 )),
