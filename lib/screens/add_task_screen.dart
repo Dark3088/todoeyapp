@@ -4,12 +4,10 @@ class AddTaskScreen extends StatelessWidget {
   const AddTaskScreen({
     super.key,
     required this.addTask,
-    required this.clearField,
     required this.textEditingController,
   });
 
   final Function addTask;
-  final Function clearField;
   final TextEditingController textEditingController;
 
   @override
@@ -38,7 +36,6 @@ class AddTaskScreen extends StatelessWidget {
               controller: textEditingController,
               textAlign: TextAlign.center,
               keyboardType: TextInputType.text,
-              onEditingComplete: () => clearField,
               onChanged: (value) {
                 textEditingController.text = value;
                 textEditingController.selection = TextSelection.collapsed(

@@ -1,3 +1,7 @@
+import 'dart:collection';
+
+import 'package:flutter/foundation.dart';
+
 class Task {
   final String name;
   bool isDone;
@@ -9,15 +13,14 @@ class Task {
   }
 }
 
-class TaskManager {
-  TaskManager();
-
+class TaskManager with ChangeNotifier {
   List<Task> _taskList = [];
-  List<Task> getTaskList() => _taskList;
+  List<Task> get taskList => List.unmodifiable(_taskList);
+  int get tasksCount => _taskList.length;
 
-  List<Task> createNewTask({String taskText = ''}) {
+  void createNewTask({String taskText = ''}) {
     _taskList.add(Task(name: taskText));
-    return _taskList;
+    notifyListeners();
   }
 
   void initTasksList() {
@@ -28,12 +31,13 @@ class TaskManager {
     ];
   }
 
-  List<Task> updateTaskState(int taskIndex) {
+  updateTaskState(int taskIndex) {
     _taskList[taskIndex].updateCheckbox();
-    return _taskList;
+    notifyListeners();
   }
 
   void removeTaskAt({required int position}) {
     _taskList.removeAt(position);
+    notifyListeners();
   }
 }

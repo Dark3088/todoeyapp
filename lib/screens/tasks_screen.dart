@@ -3,47 +3,15 @@ import 'package:todoeyapp/models/task.dart';
 import 'package:todoeyapp/screens/add_task_screen.dart';
 import '../widgets/task_list.dart';
 
-class TasksScreen extends StatefulWidget {
+class TasksScreen extends StatelessWidget {
   const TasksScreen({super.key});
 
   @override
-  State<TasksScreen> createState() => _TasksScreenState();
-}
-
-class _TasksScreenState extends State<TasksScreen> {
-  final _textController = TextEditingController();
-  final taskManager = TaskManager();
-
-  void createTask(String newTaskName) {
-    setState(() {
-      taskManager.createNewTask(taskText: newTaskName);
-      _textController.clear();
-    });
-  }
-
-  @override
-  void dispose() {
-    _textController.dispose();
-    super.dispose();
-  }
-
-  void updateTask(int taskId) {
-    setState(() {
-      taskManager.updateTaskState(taskId);
-    });
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    taskManager.initTasksList();
-    _textController.addListener(() {
-      _textController.text;
-    });
-  }
-
-  @override
   Widget build(BuildContext context) {
+    final taskManager = TaskManager();
+    taskManager.initTasksList();
+    final textController = TextEditingController();
+
     return Scaffold(
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.lightBlueAccent,
@@ -67,12 +35,14 @@ class _TasksScreenState extends State<TasksScreen> {
                 ),
                 child: AddTaskScreen(
                   addTask: (String taskText) {
-                    createTask(taskText);
-                    Future.delayed(const Duration(milliseconds: 400),
-                        () => Navigator.pop(context));
+                    textController.clear();
+                    taskManager.createNewTask(taskText: taskText);
+                    Future.delayed(
+                      const Duration(milliseconds: 300),
+                      () => Navigator.pop(context),
+                    );
                   },
-                  clearField: () => createTask,
-                  textEditingController: _textController,
+                  textEditingController: textController,
                 )),
           );
         },
@@ -108,12 +78,13 @@ class _TasksScreenState extends State<TasksScreen> {
                   color: Colors.white,
                 ),
               ),
-              Text(
-                '${taskManager.getTaskList().length} Tasks',
-                style: const TextStyle(
-                  color: Colors.white,
+              ListenableBuilder(
+                listenable: taskManager,
+                builder: (context, child) => Text(
+                  '${taskManager.tasksCount} Tasks',
+                  style: const TextStyle(color: Colors.white),
                 ),
-              )
+              ),
             ]),
           ),
           Expanded(
@@ -125,10 +96,7 @@ class _TasksScreenState extends State<TasksScreen> {
                   topRight: Radius.circular(30),
                 ),
               ),
-              child: TaskList(
-                taskList: taskManager.getTaskList(),
-                updateCheckbox: (taskIndex) => updateTask(taskIndex),
-              ),
+              child: TaskList(taskManager: taskManager),
             ),
           ),
         ],
